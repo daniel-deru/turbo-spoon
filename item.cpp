@@ -9,7 +9,20 @@ Item::Item(QString& ID, QString& name, float price) : ID(ID), name(name), price(
 
 // Method to print item details
 void Item::print() {
-    std::cout << "ID: " << ID.toStdString() << "\n Name: " << name.toStdString() << "\n Price: " << price << std::endl;
+    std::cout << toString() << std::endl;
+}
+
+std::string Item::toString() {
+    QString itemDetails = QString("ID: %1\nName: %2\nPrice: %3").arg(ID, name, QString::number(price));
+    return itemDetails.toStdString();
+}
+
+QString Item::displayHeader() {
+    return "ID\t|Name\t|Price\t|";
+}
+
+QString Item::displayItem() {
+    return (getID() + "\t|" + getName() + "\t|" + QString::number(getPrice()) + "\t|");
 }
 
 /* ---------- Setters ---------- */

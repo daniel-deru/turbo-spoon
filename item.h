@@ -15,6 +15,9 @@ public:
 
     // methods
     void print();
+    std::string toString();
+    QString displayHeader();
+    QString displayItem();
 
     // setters
     void setID(QString&);

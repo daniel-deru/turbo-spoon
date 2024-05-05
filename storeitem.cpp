@@ -9,19 +9,26 @@ StoreItem::StoreItem(QString& ID, QString& name, float price) : Item(ID, name, p
 
 
 QString StoreItem::toString() {
-    return "ID: " + getID() + "\n Name: " + getName() + "\n Price: " + QString::number(getPrice());
+    return displayHeader() + "\n" + displayItem();
 }
 
 QString StoreItem::toString(bool includeVendor) {
     QString result = toString();
-    if (includeVendor) {
-        result += "\n Vendor: " + getVendorName();
+
+    if(!includeVendor) return result;
+
+    if (vendor.getName() != "") {
+        QString header = displayHeader() + vendor.displayHeader() + "\n";
+        QString item = displayItem() + vendor.displayVendor();
+        result = header + item;
     }
+
     return result;
 }
 
 void StoreItem::print() {
-    std::cout << toString(true).toStdString() << std::endl;
+    bool hasVendor = vendor.getName() == "";
+    std::cout << toString(hasVendor).toStdString() << std::endl;
 }
 
 void StoreItem::setVendor(Vendor& v) {
@@ -29,73 +36,6 @@ void StoreItem::setVendor(Vendor& v) {
 }
 
 const QString StoreItem::getVendorName() {
-    return vendor.getName();
-}
-
-std::istream& operator<<(std::istream& is, const StoreItem* storeItem)
-{
-    QTextStream cin(stdin);
-    QTextStream cout(stdout);
-
-    cout << "Item ID: ";
-    cout.flush();
-    QString itemID = cin.readLine();
-
-    cout << "Item Name: ";
-    cout.flush();
-    QString itemName = cin.readLine();
-
-    cout << "Item Price: ";
-    cout.flush();
-    QString itemPriceStr = cin.readLine();
-    float itemPrice = itemPriceStr.toFloat();
-
-    cout << "Vendor ID: ";
-    cout.flush();
-    QString vendorID = cin.readLine();
-
-    cout << "Vendor Name: ";
-    cout.flush();
-    QString vendorName = cin.readLine();
-
-    cout << "Vendor Street Number: ";
-    cout.flush();
-    QString vendorStreetNumber = cin.readLine();
-
-    cout << "Vendor Street Name: ";
-    cout.flush();
-    QString vendorStreetName = cin.readLine();
-
-    cout << "Vendor City: ";
-    cout.flush();
-    QString vendorCity = cin.readLine();
-
-    cout << "Vendor Province: ";
-    cout.flush();
-    QString vendorProvince = cin.readLine();
-
-    cout << "Vendor Post Code: ";
-    cout.flush();
-    QString vendorPostCode = cin.readLine();
-
-    cout << "Vendor Country: ";
-    cout.flush();
-    QString vendorCountry = cin.readLine();
-
-    StoreItem item(itemID, itemName, itemPrice);
-
-    Address address(
-        vendorStreetNumber,
-        vendorStreetName,
-        vendorCity,
-        vendorProvince,
-        vendorPostCode,
-        vendorCountry
-        );
-
-    Vendor vendor(vendorID, vendorName, address);
-
-    item.setVendor(vendor);
-
-    return is;
+    QString vendorName = vendor.getName() != "" ? vendor.getName() : "Unknown";
+    return vendorName;
 }

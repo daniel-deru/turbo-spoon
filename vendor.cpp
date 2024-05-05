@@ -1,14 +1,25 @@
 #include "vendor.h"
 #include "address.h"
+#include "commandline.h"
 
 // Default constructor
 Vendor::Vendor() : ID(""), name(""), address(Address()) {}
 
 Vendor::Vendor(QString& ID, QString& name, Address& address) : ID(ID), name(name), address(address) {}
 
-void Vendor::toString() {
-    std::cout << "ID: " << ID.toStdString() << "\n Name: " << name.toStdString() << "\n Address: \n";
-    address.print();
+std::string Vendor::toString() {
+
+    QString vendorDetails = QString("ID: %1\nName: %2\nAddress: \n%3");
+    vendorDetails = vendorDetails.arg(ID, name, address.toString());
+    return vendorDetails.toStdString();
+}
+
+QString Vendor::displayHeader() {
+    return "Vendor Name\t|Vendor Address\t|";
+}
+
+QString Vendor::displayVendor() {
+    return getName() + "\t\t|" + getAddress().toString() + "\t|";
 }
 
 /* ---------- Setters ---------- */
@@ -18,11 +29,11 @@ void Vendor::setID(QString& id) {
 }
 
 void Vendor::setName(QString& name) {
-    name = name;
+    this->name = name;
 }
 
 void Vendor::setAddress(Address& address) {
-    address = address;
+    this->address = address;
 }
 
 /* ---------- getters ---------- */
@@ -35,7 +46,7 @@ const QString Vendor::getName() {
     return name;
 }
 
-const Address Vendor::getAddress() {
+Address Vendor::getAddress() {
     return address;
 }
 
@@ -43,4 +54,19 @@ std::ostream& operator<<(std::ostream& os, const Vendor* vendor) {
     os << "ID: " << vendor->ID.toStdString() << "\n Name: " << vendor->name.toStdString() << "\n Address: ";
     os << &(vendor->address);
     return os;
+}
+
+std::istream& operator>>(std::istream& is, Vendor& vendor) {
+
+    Address address;
+
+    QString ID = QCommandLine::input("Vendor ID: ");
+    QString name = QCommandLine::input("Vendor Name: ");
+    std::cin >> address;
+
+    vendor.setID(ID);
+    vendor.setName(name);
+    vendor.setAddress(address);
+
+    return is;
 }

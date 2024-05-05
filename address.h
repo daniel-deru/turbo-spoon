@@ -6,24 +6,39 @@
 class Address
 {
 public:
-    QString streetNumber;
-    QString streetName;
+    QString street;
     QString city;
     QString province;
-    QString postCode;
     QString country;
 
     Address();
 
     Address(
-        QString& streetNumber,
-        QString& streetName,
+        QString& street,
         QString& city,
         QString& province,
-        QString& postCode,
         QString& country);
 
     void print();
+    QString toString();
+    QString getAddress();
+
+    // Getter methods
+    const QString& getStreet() const;
+    const QString& getCity() const;
+    const QString& getProvince() const;
+    const QString& getPostCode() const;
+    const QString& getCountry() const;
+
+    // Setter methods
+    void setStreet(QString& street);
+    void setCity(QString& city);
+    void setProvince(QString& province);
+    void setPostCode(QString& postCode);
+    void setCountry(QString& country);
+
+
+    friend std::istream& operator>>(std::istream& is, Address& address);
 };
 
 #endif // ADDRESS_H

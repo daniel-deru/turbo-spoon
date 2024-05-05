@@ -19,6 +19,7 @@ add_executable(InventorySystem
   storeitem.h storeitem.cpp
   address.h
   address.cpp
+  commandline.h commandline.cpp
 )
 target_link_libraries(InventorySystem Qt${QT_VERSION_MAJOR}::Core)
 

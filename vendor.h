@@ -15,7 +15,10 @@ public:
     Vendor(QString& ID, QString& name, Address& address);
 
     // methods
-    void toString();
+    std::string toString();
+    void print();
+    QString displayHeader();
+    QString displayVendor();
 
     // setters
     void setID(QString& id);
@@ -25,10 +28,11 @@ public:
     // getters
     const QString getID();
     const QString getName();
-    const Address getAddress();
+    Address getAddress();
 
     // overloaded operators
     friend std::ostream& operator<<(std::ostream&, const Vendor*);
+    friend std::istream& operator>>(std::istream& is, Vendor& vendor);
 
 private:
     QString ID;
