@@ -21,6 +21,7 @@ public:
     // methods
     QString toString();
     QString toString(bool includeVendor);
+    static StoreItem createStoreItem();
 
     // overloaded methods
     void print();

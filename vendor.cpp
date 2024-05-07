@@ -15,11 +15,14 @@ std::string Vendor::toString() {
 }
 
 QString Vendor::displayHeader() {
-    return "Vendor Name\t|Vendor Address\t|";
+    QString nameHeader = QString("Vendor Name").leftJustified(getName().length());
+    QString addressHeader = QString("Vender Address").leftJustified(getAddress().toString().length());
+
+    return QString("%1\t|%2\t|").arg(nameHeader, addressHeader);
 }
 
 QString Vendor::displayVendor() {
-    return getName() + "\t\t|" + getAddress().toString() + "\t|";
+    return getName() + "\t|" + getAddress().toString() + "\t|";
 }
 
 /* ---------- Setters ---------- */

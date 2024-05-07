@@ -5,16 +5,17 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <optional>
 
 #include "storeitem.h"
 #include "vendor.h"
 #include "commandline.h"
 
+std::optional<Vendor> findExistingVendor(std::map<std::string, Vendor>& existingVendors);
+
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-
-    int itemCount;
 
     std::vector<StoreItem> storeItems;
     std::map<std::string, Vendor> vendors; // Keep track of vendors to avoid repetition
@@ -29,27 +30,22 @@ int main(int argc, char *argv[])
 
         if(enterItem.startsWith("Y", Qt::CaseInsensitive)) {
 
-            QString itemID = QCommandLine::input("Enter Item ID: ");
-            QString itemName = QCommandLine::input("Enter Item Name: ");
-            float itemPrice = QCommandLine::input("Enter Item Price: ").toFloat();
-
-            StoreItem item(itemID, itemName, itemPrice);
+            StoreItem item = StoreItem::createStoreItem();
 
             QString includeVendor = QCommandLine::input("[Y/N] Do you want to set the vendor as well? ");
 
-            Vendor vendor;
-
             if(includeVendor.startsWith("Y", Qt::CaseInsensitive)) {
+                Vendor vendor;
 
                 if(!vendors.empty()) {
                     QString useExisting = QCommandLine::input("[Y/N] Do you want to use an existing vendor? ");
 
                     if(useExisting.startsWith("Y", Qt::CaseInsensitive)) {
-                        QString vendorID = QCommandLine::input("[Y/N] Enter vendor ID: ");
+                        auto result = findExistingVendor(vendors);
 
-                        std::map<std::string, Vendor>::iterator iterator = vendors.find(vendorID.toStdString());
-
-                        vendor = iterator->second;
+                        if(result.has_value()) {
+                            vendor = result.value();
+                        }
                     }
                 }
                 else {
@@ -62,7 +58,7 @@ int main(int argc, char *argv[])
             }
 
             storeItems.push_back(item);
-            itemIDs.insert(itemID.toStdString());
+            itemIDs.insert(item.getID().toStdString());
 
         } else {
             halt = true;
@@ -85,4 +81,35 @@ int main(int argc, char *argv[])
     }
 
     return app.exec();
+}
+
+std::optional<Vendor> findExistingVendor(std::map<std::string, Vendor>& existingVendors) {
+    Vendor vendor;
+    bool vendorFound = false;
+    int tries = 3;
+
+    do {
+        QString vendorID = QCommandLine::input("[Y/N] Enter vendor ID: ");
+
+        std::map<std::string, Vendor>::iterator iterator = existingVendors.find(vendorID.toStdString());
+
+        if(iterator == existingVendors.end()) {
+            QCommandLine::output("Vendor Not Found.");
+            tries--;
+        }
+        else {
+            vendor = iterator->second;
+            vendorFound = true;
+        }
+
+    } while(!vendorFound || tries > 0);
+
+    if(vendorFound) {
+        return vendor;
+    }
+    else {
+        QCommandLine::output("Too many tries! Exiting vendor search.");
+        return std::nullopt;
+    }
+
 }

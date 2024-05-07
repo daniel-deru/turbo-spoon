@@ -31,6 +31,16 @@ void StoreItem::print() {
     std::cout << toString(hasVendor).toStdString() << std::endl;
 }
 
+StoreItem StoreItem::createStoreItem() {
+    Item item = Item::createItem();
+
+    QString ID = item.getID();
+    QString name = item.getName();
+    float price = item.getPrice();
+
+    return StoreItem(ID, name, price);
+}
+
 void StoreItem::setVendor(Vendor& v) {
     vendor = v;
 }

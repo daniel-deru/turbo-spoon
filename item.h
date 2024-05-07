@@ -18,6 +18,7 @@ public:
     std::string toString();
     QString displayHeader();
     QString displayItem();
+    static Item createItem();
 
     // setters
     void setID(QString&);

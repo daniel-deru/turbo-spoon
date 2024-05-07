@@ -1,4 +1,5 @@
 #include "item.h"
+#include "commandline.h"
 
 #include <iostream>
 
@@ -18,11 +19,25 @@ std::string Item::toString() {
 }
 
 QString Item::displayHeader() {
-    return "ID\t|Name\t|Price\t|";
+    QString IDHeader = QString("ID").leftJustified(ID.length());
+    QString nameHeader = QString("Name").leftJustified(name.length());
+    QString priceHeader = QString("Price").leftJustified(QString::number(price).length());
+
+    return QString("%1\t|%2\t|%3\t|").arg(IDHeader, nameHeader, priceHeader);
 }
 
 QString Item::displayItem() {
     return (getID() + "\t|" + getName() + "\t|" + QString::number(getPrice()) + "\t|");
+}
+
+Item Item::createItem(){
+    QString itemID = QCommandLine::input("Enter Item ID: ");
+    QString itemName = QCommandLine::input("Enter Item Name: ");
+    float itemPrice = QCommandLine::input("Enter Item Price: ").toFloat();
+
+    Item item(itemID, itemName, itemPrice);
+
+    return item;
 }
 
 /* ---------- Setters ---------- */
