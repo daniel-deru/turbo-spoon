@@ -11,7 +11,9 @@
 #include "vendor.h"
 #include "commandline.h"
 
+bool setExistingVendor(std::map<std::string, Vendor>& existingVendors, Vendor& vendor);
 std::optional<Vendor> findExistingVendor(std::map<std::string, Vendor>& existingVendors);
+
 
 int main(int argc, char *argv[])
 {
@@ -25,31 +27,35 @@ int main(int argc, char *argv[])
     QCommandLine::output("Welcome to the StoreItem Inventory Management System");
 
     // Start input loop
-    do {
-        QString enterItem = QCommandLine::input("\n[Y/N] Would you like to enter a new item? ");
+    do { // while(!halt)
+        bool enterItem = QCommandLine::inputYesNo("\n[Y/N] Would you like to enter a new item? ");
 
-        if(enterItem.startsWith("Y", Qt::CaseInsensitive)) {
+        if(enterItem) {
 
-            StoreItem item = StoreItem::createStoreItem();
+            StoreItem item = StoreItem::createStoreItem(); // User input Change this name
 
-            QString includeVendor = QCommandLine::input("[Y/N] Do you want to set the vendor as well? ");
+            bool includeVendor = QCommandLine::inputYesNo("[Y/N] Do you want to set the vendor as well? ");
 
-            if(includeVendor.startsWith("Y", Qt::CaseInsensitive)) {
+            if(includeVendor) {
                 Vendor vendor;
 
-                if(!vendors.empty()) {
-                    QString useExisting = QCommandLine::input("[Y/N] Do you want to use an existing vendor? ");
-
-                    if(useExisting.startsWith("Y", Qt::CaseInsensitive)) {
-                        auto result = findExistingVendor(vendors);
-
-                        if(result.has_value()) {
-                            vendor = result.value();
-                        }
-                    }
+                if(vendors.empty()) {
+                    std::cin >> vendor; // Input the vendor fields
                 }
                 else {
-                    std::cin >> vendor; // Input the vendor fields
+                    bool useExisting = QCommandLine::inputYesNo("[Y/N] Do you want to use an existing vendor? ");
+
+                    if(useExisting) {
+                        bool vendorSet = setExistingVendor(vendors, vendor); // Set vendor if found
+
+                        if(!vendorSet) {
+                            bool createNewItem = QCommandLine::inputYesNo("[Y/N] Do you want to create a new vendor? ");
+
+                            if(createNewItem) {
+                                std::cin >> vendor; // Input the vendor fields
+                            }
+                        }
+                    }
                 }
 
                 item.setVendor(vendor);
@@ -83,8 +89,7 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
-std::optional<Vendor> findExistingVendor(std::map<std::string, Vendor>& existingVendors) {
-    Vendor vendor;
+bool setExistingVendor(std::map<std::string, Vendor>& existingVendors, Vendor& vendor) {
     bool vendorFound = false;
     int tries = 3;
 
@@ -93,23 +98,20 @@ std::optional<Vendor> findExistingVendor(std::map<std::string, Vendor>& existing
 
         std::map<std::string, Vendor>::iterator iterator = existingVendors.find(vendorID.toStdString());
 
-        if(iterator == existingVendors.end()) {
-            QCommandLine::output("Vendor Not Found.");
-            tries--;
-        }
-        else {
+        if(iterator != existingVendors.end()) {
             vendor = iterator->second;
             vendorFound = true;
+        }
+        else {
+            QCommandLine::output("Vendor Not Found.");
+            tries--;
         }
 
     } while(!vendorFound || tries > 0);
 
-    if(vendorFound) {
-        return vendor;
-    }
-    else {
-        QCommandLine::output("Too many tries! Exiting vendor search.");
-        return std::nullopt;
+    if(!vendorFound) {
+       QCommandLine::output("Too many tries! Exiting vendor search.");
     }
 
+    return vendorFound;
 }

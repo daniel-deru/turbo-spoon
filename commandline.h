@@ -12,6 +12,7 @@ public:
 
     static QString input(std::string message);
     static void output(std::string message);
+    static bool inputYesNo(std::string message);
 };
 
 #endif // COMMANDLINE_H

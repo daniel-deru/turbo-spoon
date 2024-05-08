@@ -20,3 +20,8 @@ QString QCommandLine::input(std::string message) {
 void QCommandLine::output(std::string message) {
     std::cout << message << std::endl;
 }
+
+bool QCommandLine::inputYesNo(std::string message) {
+    QString result = QCommandLine::input(message);
+    return result.startsWith("Y", Qt::CaseInsensitive);
+}
